@@ -41,7 +41,7 @@ Java_com_example_cppnguide_MainActivity_stringFromJNI(JNIEnv *env, jobject thiz)
 
 }
 extern "C" JNIEXPORT jstring
-Java_com_example_cppnguide_CreateMap_createVocabulary(JNIEnv *env, jobject thiz, int num_images, jstring path) {
+Java_com_example_cppnguide_CreateMapAlgorithm_createVocabulary(JNIEnv *env, jobject thiz, int num_images, jstring path) {
 
     vector<vector<cv::Mat>>features;
     //getting orb in each image
@@ -74,8 +74,19 @@ Java_com_example_cppnguide_CreateMap_createVocabulary(JNIEnv *env, jobject thiz,
     const ScoringType scoring = L1_NORM;
     OrbVocabulary voc(k, L, weight, scoring);
     voc.create(features);
+    BowVector v1, v2;
+    for(int i = 0; i < num_images; i++)
+    {
+        voc.transform(features[i], v1);
+        for(int j = 0; j < num_images; j++)
+        {
+            voc.transform(features[j], v2);
+            double score = voc.score(v1, v2);
+        }
+    }
 
     voc.save(filename + "/Map/map_voc.yml.gz");
+    voc.load(filename + "/Map/map_voc.yml.gz");
 
     // creating database
     OrbDatabase db(voc, false, 0);

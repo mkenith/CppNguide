@@ -3,6 +3,7 @@ package com.example.cppnguide;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.view.WindowManager;
@@ -14,11 +15,10 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.Size;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
 
-public class Navigation extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
+import java.util.Locale;
+
+public class NavigationCamera extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
     private static final String TAG = "Navigation";
     private CameraBridgeViewBase cameraBridgeViewBase;
     private Mat mRGBA = new Mat();
@@ -32,7 +32,9 @@ public class Navigation extends AppCompatActivity implements CameraBridgeViewBas
         setContentView(R.layout.activity_navigation);
         cameraBridgeViewBase = (CameraBridgeViewBase) findViewById(R.id.camera_view_2);
         cameraBridgeViewBase.setVisibility(SurfaceView.VISIBLE);
-        cameraBridgeViewBase.setCvCameraViewListener(Navigation.this);
+        cameraBridgeViewBase.setCvCameraViewListener(NavigationCamera.this);
+
+
         try{
             objectDetector = new ObjectDetector(getAssets(),"ssd_mobilenet.tflite","labelmap.txt",300);
 

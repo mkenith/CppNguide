@@ -13,7 +13,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CreateMap extends Activity {
+public class CreateMapAlgorithm extends Activity {
     private List rotationVectors;
     private String baseStorage;
     private List roomArea;
@@ -26,7 +26,7 @@ public class CreateMap extends Activity {
         System.loadLibrary("cppnguide");
     }
 
-    public CreateMap(String baseStorage, List rotationVectors,List roomArea,int num_image,int steps){
+    public CreateMapAlgorithm(String baseStorage, List rotationVectors, List roomArea, int num_image, int steps){
         this.rotationVectors = rotationVectors;
         this.baseStorage = baseStorage;
         this.roomArea = roomArea;
@@ -93,8 +93,5 @@ public class CreateMap extends Activity {
         matcher.match(descriptors1, descriptors2, matches);
         return matches.size(1);
     }
-
     public native String createVocabulary(int num_images,String path);
-
-
 }

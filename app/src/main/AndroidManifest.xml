@@ -22,10 +22,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CppNguide">
         <activity
-            android:name=".Navigation"
+            android:name=".NavigationCamera"
             android:exported="false" />
         <activity
-            android:name=".OpenCVCamera"
+            android:name=".MapCreationCamera"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
@@ -36,6 +36,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

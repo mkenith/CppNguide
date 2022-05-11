@@ -3,7 +3,6 @@ package com.example.cppnguide;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Application;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.hardware.Sensor;
@@ -11,8 +10,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.FileUtils;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
@@ -26,15 +24,10 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
-import org.opencv.core.Core;
 import org.opencv.core.CvType;
-import org.opencv.core.DMatch;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfDMatch;
 import org.opencv.core.MatOfKeyPoint;
-import org.opencv.core.Point;
 import org.opencv.core.Size;
-import org.opencv.features2d.DescriptorMatcher;
 import org.opencv.features2d.Features2d;
 import org.opencv.features2d.ORB;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -45,8 +38,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
-public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
+public class MapCreationCamera extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
     private Mat mRGBA, imageToSave;
 
@@ -83,10 +77,11 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
     private List<Integer> rotationVectors;
     private List<Integer> rooms;
     private boolean added_room = false;
-    private int roomCount = 1;
+    private int roomCount = 0;
     private TextView roomsView;
     private int num_image=0;
     private StaticStepCounter ssc;
+    private TextToSpeech textToSpeech;
 
 
 
@@ -112,7 +107,7 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
         setContentView(R.layout.activity_open_cvcamera);
         cameraBridgeViewBase = (CameraBridgeViewBase) findViewById(R.id.camera_view);
         cameraBridgeViewBase.setVisibility(SurfaceView.VISIBLE);
-        cameraBridgeViewBase.setCvCameraViewListener(OpenCVCamera.this);
+        cameraBridgeViewBase.setCvCameraViewListener(MapCreationCamera.this);
 
 
         step_view = findViewById(R.id.step);
@@ -128,12 +123,21 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
         add_room.setBackgroundColor(Color.GREEN);
         add_room.setVisibility(View.INVISIBLE);
 
+
+        textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int i) {
+                textToSpeech.setLanguage(Locale.US);
+                textToSpeech.speak("Map Creation.",TextToSpeech.QUEUE_FLUSH,null,null);
+            }
+        });
+
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
-                        CreateMap cm = new CreateMap(baseStorage,rotationVectors,rooms,num_image,stepCount);
+                        CreateMapAlgorithm cm = new CreateMapAlgorithm(baseStorage,rotationVectors,rooms,num_image,stepCount);
                         num_image = 0;
                         Toast.makeText(getBaseContext(),"Response: "+ cm.response,Toast.LENGTH_LONG).show();
                         break;
@@ -148,8 +152,10 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
         add_room.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                roomCount++;
                 roomsView.setText("Rooms Added: "+(roomCount));
                 added_room = true;
+                textToSpeech.speak("Room Added.",TextToSpeech.QUEUE_FLUSH,null,null);
 
             }
         });
@@ -162,7 +168,8 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
                     record.setText("Record");
                     isRecording = false;
                     add_room.setVisibility(View.INVISIBLE);
-                    AlertDialog.Builder builder = new AlertDialog.Builder(OpenCVCamera.this);
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MapCreationCamera.this);
                     builder.setMessage("Do you want to create the map?").setPositiveButton("Yes", dialogClickListener)
                             .setNegativeButton("No", dialogClickListener).show();
 
@@ -193,7 +200,7 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
 
                     }
                     count = 0;
-                    roomCount = 1;
+                    roomCount = 0;
                     add_room.setVisibility(View.VISIBLE);
                     roomsView.setText("Rooms Added: 0");
                     stepCount = 0;
@@ -231,42 +238,42 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
         SensorEventListener sensorEventListenerAccelometer = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
+                if(isRecording){
+                    float upperThreshold = 10.5f;
+                    float lowerTreshold = 10.0f;
 
-                float upperThreshold = 10.5f;
-                float lowerTreshold =  10.0f;
+                    float x_acceleration = event.values[0];
+                    float y_acceleration = event.values[1];
+                    float z_acceleration = event.values[2];
 
-                float x_acceleration = event.values[0];
-                float y_acceleration = event.values[1];
-                float z_acceleration = event.values[2];
-
-                double magnitude = (double) Math.sqrt(x_acceleration*x_acceleration + y_acceleration*y_acceleration + z_acceleration*z_acceleration);
-
-                ssc.findStep(magnitude);
-                if(ssc.getStepCount() > stepCount){
-                   stepCount = ssc.getStepCount();
-                   rotationVectors.add(angle);
-                   step_view.setText("Steps: "+stepCount);
-                   stepCount++;
-                }
-                /*
-                if(!detected) {
-                    if(magnitude > upperThreshold) {
-                        detected = true;
+                    double magnitude = (double) Math.sqrt(x_acceleration * x_acceleration + y_acceleration * y_acceleration + z_acceleration * z_acceleration);
+                    /*
+                    ssc.findStep(magnitude);
+                    if(ssc.getStepCount() > stepCount){
+                       stepCount = ssc.getStepCount();
+                       rotationVectors.add(angle);
+                       step_view.setText("Steps: "+stepCount);
+                       stepCount++;
                     }
-                } else if(magnitude < lowerTreshold) {
-                    detected = false;
-                    consumed = false;
-                }
-                if(detected && !consumed){
-                    stepCount++;
-                    consumed = true;
-                    rotationVectors.add(angle);
-                    step_view.setText("Steps: "+stepCount);
 
-                }
+                    */
 
-                 */
-                //System.out.print(""+stepCount);
+                    if (!detected) {
+                        if (magnitude > upperThreshold) {
+                            detected = true;
+                        }
+                    } else if (magnitude < lowerTreshold) {
+                        detected = false;
+                        consumed = false;
+                    }
+                    if (detected && !consumed) {
+                        stepCount++;
+                        consumed = true;
+                        rotationVectors.add(angle);
+                        step_view.setText("Steps: " + stepCount);
+
+                    }
+                }
             }
             @Override
             public void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -374,6 +381,12 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
         }
         return output;
     }
+
+    // Feedback
+    public void Speak(String message){
+        textToSpeech.speak(message, TextToSpeech.QUEUE_FLUSH, null,null);
+    }
+
 
 }
 

@@ -5,7 +5,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -15,7 +14,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.cppnguide.OpenCVCamera;
 import com.example.cppnguide.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
@@ -71,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     else{
                         Toast.makeText(getBaseContext(), "camera permission granted", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(MainActivity.this,OpenCVCamera.class);
+                        Intent intent = new Intent(MainActivity.this, MapCreationCamera.class);
                         startActivity(intent);
                     }
                 }
@@ -81,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         navigation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this,Navigation.class);
+                Intent intent = new Intent(MainActivity.this, NavigationCamera.class);
                 startActivity(intent);
             }
         });
@@ -113,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
             {
-                Intent intent = new Intent(MainActivity.this, OpenCVCamera.class);
+                Intent intent = new Intent(MainActivity.this, MapCreationCamera.class);
                 startActivity(intent);
                 Toast.makeText(this, "camera permission granted", Toast.LENGTH_SHORT).show();
             }
