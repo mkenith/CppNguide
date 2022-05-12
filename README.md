@@ -10,4 +10,4 @@ It has been already connfigured with native opencv and ready to run as an aandro
 ### Step Counter from current location to destination
 ### Room Recognition C++ visual bag of words(for limited datasets)
 ##
-## Author: Mark Kenith Simbajon
+##
