@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+
         <org.opencv.android.JavaCameraView
             android:id="@+id/camera_view_2"
             android:layout_width="match_parent"
@@ -18,11 +19,47 @@
             opencv:camera_id="any"
             opencv:layout_constraintBottom_toBottomOf="parent"
             opencv:layout_constraintEnd_toEndOf="parent"
-            opencv:layout_constraintHorizontal_bias="0.0"
+            opencv:layout_constraintHorizontal_bias="1.0"
             opencv:layout_constraintStart_toStartOf="parent"
             opencv:layout_constraintTop_toTopOf="parent"
-            opencv:layout_constraintVertical_bias="0.0"
+            opencv:layout_constraintVertical_bias="1.0"
             opencv:show_fps="true" />
+
+        <TextView
+            android:id="@+id/score"
+            android:layout_width="86dp"
+            android:layout_height="21dp"
+            android:layout_marginTop="28dp"
+            android:layout_marginEnd="144dp"
+            android:text="Score: 0"
+            android:textColor="#4CAF50"
+            android:textSize="14sp"
+            opencv:layout_constraintEnd_toEndOf="parent"
+            opencv:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/index"
+            android:layout_width="122dp"
+            android:layout_height="27dp"
+            android:layout_marginTop="52dp"
+            android:layout_marginEnd="244dp"
+            android:text="Index: 0 "
+            android:textColor="#4CAF50"
+            android:textSize="14sp"
+            opencv:layout_constraintEnd_toEndOf="parent"
+            opencv:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
+            android:layout_marginEnd="160dp"
+            android:text="Location: 0"
+            android:textColor="#4CAF50"
+            android:textSize="14sp"
+            opencv:layout_constraintEnd_toEndOf="parent"
+            opencv:layout_constraintTop_toTopOf="parent" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

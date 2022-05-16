@@ -54,10 +54,14 @@ Java_com_example_cppnguide_CreateMapAlgorithm_createVocabulary(JNIEnv *env, jobj
     const char *str = env->GetStringUTFChars(path, 0);
     std::string str2 = str;
     std::string filename = str2;
+    std::string imageNames;
 
     for(int i = 0; i < num_images; ++i) {
         stringstream ss;
-        ss << path << "/Images/" << std::setfill('0') << std::setw(10) << i << ".jpg";
+        ss << filename << "/Images/" << std::setfill('0') << std::setw(10) << i << ".jpg";
+
+        //imageNames+=","+ss.str();
+
         cv::Mat image = cv::imread(ss.str(), 0);
         cv::Mat mask;
         vector<cv::KeyPoint> keypoints;
@@ -75,18 +79,21 @@ Java_com_example_cppnguide_CreateMapAlgorithm_createVocabulary(JNIEnv *env, jobj
     OrbVocabulary voc(k, L, weight, scoring);
     voc.create(features);
     BowVector v1, v2;
+    std::string score;
+
+
     for(int i = 0; i < num_images; i++)
     {
         voc.transform(features[i], v1);
         for(int j = 0; j < num_images; j++)
         {
             voc.transform(features[j], v2);
-            double score = voc.score(v1, v2);
+            score +=","+ to_string(voc.score(v1, v2));
         }
     }
 
+
     voc.save(filename + "/Map/map_voc.yml.gz");
-    voc.load(filename + "/Map/map_voc.yml.gz");
 
     // creating database
     OrbDatabase db(voc, false, 0);
@@ -96,9 +103,41 @@ Java_com_example_cppnguide_CreateMapAlgorithm_createVocabulary(JNIEnv *env, jobj
         db.add(features[i]);
     }
     db.save( filename + "/Map/map_db.yml.gz");
-    std::string score = "100";
-    return env->NewStringUTF(score.c_str());
+    return env->NewStringUTF("Success!");
 }
 
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_com_example_cppnguide_NavigationCamera_navigation(JNIEnv *env, jobject thiz, jstring path) {
+    vector<vector<cv::Mat>>features;
+    //getting orb in each image
+    features.clear();
+    features.reserve(1);
+    cv::Ptr<cv::ORB> orb = cv::ORB::create();
+    int count = 0;
 
+    const char *str = env->GetStringUTFChars(path, 0);
+    std::string str2 = str;
+    std::string filename = str2;
+    std::string imageName;
+    std::string result;
+  stringstream ss;
+    ss << filename << "/query.jpg";
+    cv::Mat image = cv::imread(ss.str(), 0);
+    cv::Mat mask;
+    vector<cv::KeyPoint> keypoints;
+    cv::Mat descriptors;
+    orb->detectAndCompute(image, mask, keypoints, descriptors);
+    features.push_back(vector<cv::Mat>());
+    changeStructure(descriptors, features.back());
+
+    OrbDatabase db(filename+"/map_db.yml.gz");
+    QueryResults ret;
+    db.query(features[0],ret,1);
+    stringstream res;
+    res << ret[0].Id << "," << ret[0].Score;
+    result = res.str();
+    return env->NewStringUTF(result.c_str());
+
+}
 

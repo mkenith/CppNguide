@@ -129,18 +129,23 @@ public class ObjectDetector {
 
         // loop through each object
         // as output has only 10 boxes
-        for (int i=0;i<5;i++){
+        for (int i=0;i<10;i++){
             float class_value=(float) Array.get(Array.get(Object_class,0),i);
             float score_value=(float) Array.get(Array.get(score,0),i);
             Boolean hasClass = false;
+/*
             for (int x = 0;x<finalClasses.length;x++){
-                if(((String) finalClasses[x]).equals((String) labelList.get((int) class_value))){
-                    hasClass = true;
-                    break;
+                try {
+                    if (((String) finalClasses[x]).equals((String) labelList.get((int) class_value))) {
+                        hasClass = true;
+                        break;
+                    }
                 }
+                catch (Exception e){}
             }
-            System.out.println("hasClass = "+hasClass);
-            if(hasClass) {
+
+ */
+           // if(hasClass) {
                 // define threshold for score
                 if (score_value > 0.5) {
                     Object box1 = Array.get(Array.get(value, 0), i);
@@ -157,7 +162,7 @@ public class ObjectDetector {
                     Imgproc.putText(rotated_mat_image, labelList.get((int) class_value), new Point(left, top), 3, 1, new Scalar(255, 0, 0, 255), 2);
                 }
                 hasClass = false;
-            }
+            //}
 
         }
         // select device and run

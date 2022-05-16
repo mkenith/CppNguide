@@ -1442,11 +1442,8 @@ void TemplatedVocabulary<TDescriptor,F>::save(cv::FileStorage &f,
     f << "nodeId" << (int)(*wit)->id;
     f << "}";
   }
-  
   f << "]"; // words
-
   f << "}";
-
 }
 
 // --------------------------------------------------------------------------

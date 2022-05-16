@@ -63,8 +63,10 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
     private double prevY = 0;
     private int prevAngle = 0;
 
+
     private Mat prev;
     private int count = 0;
+    private int imageCount = 0;
 
     private List roomDetection;
 
@@ -75,7 +77,7 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
     private ProgressBar pb;
     private Button add_room;
     private List<Integer> rotationVectors;
-    private List<Integer> rooms;
+    private List<String> rooms;
     private boolean added_room = false;
     private int roomCount = 0;
     private TextView roomsView;
@@ -116,13 +118,12 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
         add_room =findViewById(R.id.addRoom);
         roomsView = findViewById(R.id.rooms);
 
-        rooms = new ArrayList<Integer>();
+        rooms = new ArrayList<String>();
         rotationVectors = new ArrayList<Integer>();
         ssc = new StaticStepCounter(10.5,10);
 
         add_room.setBackgroundColor(Color.GREEN);
         add_room.setVisibility(View.INVISIBLE);
-
 
         textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
@@ -137,8 +138,11 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
             public void onClick(DialogInterface dialog, int which) {
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
-                        CreateMapAlgorithm cm = new CreateMapAlgorithm(baseStorage,rotationVectors,rooms,num_image,stepCount);
+                        CreateMapAlgorithm cm = new CreateMapAlgorithm(getBaseContext().getExternalFilesDir(null).getAbsolutePath(),baseStorage,rotationVectors,rooms,num_image,stepCount);
+                        cm.create();
                         num_image = 0;
+                        stepCount = 0;
+                        imageCount = 0;
                         Toast.makeText(getBaseContext(),"Response: "+ cm.response,Toast.LENGTH_LONG).show();
                         break;
 
@@ -164,6 +168,7 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
             @Override
             public void onClick(View view) {
                 if(isRecording){
+                    onPause();
                     record.setBackgroundColor(Color.BLUE);
                     record.setText("Record");
                     isRecording = false;
@@ -189,6 +194,11 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
                         outFolder.mkdirs();
                     }
                     outFolder = new File(baseStorage + "/Map");
+                    if (!outFolder.exists()) {
+                        outFolder.mkdirs();
+                    }
+
+                    outFolder = new File(baseStorage + "/Files");
                     if (!outFolder.exists()) {
                         outFolder.mkdirs();
                     }
@@ -313,9 +323,10 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         mRGBA = inputFrame.rgba();
         if(isRecording) {
+            /*
             if(prevStepCount < stepCount) {
                 Mat resizeimage = new Mat();
-                Size scaleSize = new Size(800, 600);
+                Size scaleSize = new Size(640, 480);
                 Imgproc.resize(mRGBA, resizeimage, scaleSize);
                 Imgproc.cvtColor(resizeimage, resizeimage, Imgproc.COLOR_RGBA2GRAY);
                 if (added_room) {
@@ -332,6 +343,26 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
                 prevStepCount = stepCount;
                 count++;
             }
+            */
+            if(count%10 == 0) {
+                Mat resizeimage = new Mat();
+                Size scaleSize = new Size(640, 480);
+                Imgproc.resize(mRGBA, resizeimage, scaleSize);
+                Imgproc.cvtColor(resizeimage, resizeimage, Imgproc.COLOR_RGBA2GRAY);
+                if (added_room) {
+                    rooms.add(""+roomCount);
+                    added_room = false;
+                } else {
+                    rooms.add(""+0);
+                }
+                rotationVectors.add(this.angle);
+                String imageName = String.format("%010d", imageCount) + ".jpg";
+                Imgcodecs.imwrite(baseStorage + "/Images/" + imageName, resizeimage);
+                num_image += 1;
+                prevStepCount = stepCount;
+                imageCount++;
+            }
+            count++;
         }
 
         mRGBA = featureDetector(mRGBA);
@@ -386,6 +417,7 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
     public void Speak(String message){
         textToSpeech.speak(message, TextToSpeech.QUEUE_FLUSH, null,null);
     }
+
 
 
 }

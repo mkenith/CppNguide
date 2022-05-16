@@ -10,6 +10,11 @@ import org.opencv.features2d.DescriptorMatcher;
 import org.opencv.features2d.ORB;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,14 +24,16 @@ public class CreateMapAlgorithm extends Activity {
     private List roomArea;
     private List<Location> Locations;
     private int stepCount;
-    public String response;
+    public String response="";
     private int num_image;
+    private String defaultStorage;
+    private List<Location> ReadLocations;
 
     static {
         System.loadLibrary("cppnguide");
     }
-
-    public CreateMapAlgorithm(String baseStorage, List rotationVectors, List roomArea, int num_image, int steps){
+    public CreateMapAlgorithm(String defaultStorage,String baseStorage, List rotationVectors, List roomArea, int num_image, int steps){
+        this.defaultStorage = defaultStorage;
         this.rotationVectors = rotationVectors;
         this.baseStorage = baseStorage;
         this.roomArea = roomArea;
@@ -34,6 +41,7 @@ public class CreateMapAlgorithm extends Activity {
         this.response = createVocabulary(num_image,baseStorage);
         this.num_image = num_image;
         this.stepCount = steps;
+        this.ReadLocations = new ArrayList<Location>();
     }
     public void create(){
         double current_x = 0;
@@ -42,15 +50,22 @@ public class CreateMapAlgorithm extends Activity {
         double prev_y = 0;
         double step_length = 1;
         int prevAngle = 0;
-        for(int i = 0; i< stepCount;i++){
-            String direction = getDirection(rotationVectors.indexOf(i),prevAngle);
-            prevAngle = rotationVectors.indexOf((i));
-            Locations.add(new Location(current_x,current_y,rotationVectors.indexOf(i),direction));
-            current_x =  prev_x + (step_length * Math.sin(Math.toRadians(rotationVectors.indexOf(i))));
-            current_y =  prev_y + (step_length * Math.cos(Math.toRadians(rotationVectors.indexOf(i))));
+        for(int i = 0; i< num_image;i++){
+            String direction = getDirection((Integer) rotationVectors.get(i),prevAngle);
+            prevAngle = (Integer) rotationVectors.get(i);
+            Locations.add(new Location(current_x,current_y,(Integer) rotationVectors.get(i),direction,(String) roomArea.get(i)));
+            //this.response +=(int)current_x+" , "+(int)current_y + " rot= "+(Integer) prevAngle+"\n";
+            current_x =  prev_x + (step_length * Math.sin(prevAngle));
+            current_y =  prev_y + (step_length * Math.cos(prevAngle));
             prev_x = current_x;
             prev_y = current_y;
+            prevAngle = (int)Math.toRadians((Integer)rotationVectors.get(i));
         }
+
+        WriteObjectToFile((Object) Locations);
+        ReadFileToObject(baseStorage+"/Files/Locations.ser");
+        this.response = ""+ReadLocations.size()+","+ReadLocations.get(ReadLocations.size()-1).getX()+":"+ReadLocations.get(ReadLocations.size()-1).getY();
+
     }
     public  String getDirection(int current,int target){
         int thresh = 20;
@@ -76,7 +91,6 @@ public class CreateMapAlgorithm extends Activity {
 
         ORB orb = ORB.create();
         DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMING);
-
         // first image
         Mat descriptors1 = new Mat();
         MatOfKeyPoint keypoints1 = new MatOfKeyPoint();
@@ -93,5 +107,29 @@ public class CreateMapAlgorithm extends Activity {
         matcher.match(descriptors1, descriptors2, matches);
         return matches.size(1);
     }
+    public void WriteObjectToFile(Object serObj) {
+        try {
+            FileOutputStream writeData = new FileOutputStream(baseStorage+"/Files/Locations.ser");
+            ObjectOutputStream writeStream = new ObjectOutputStream(writeData);
+            writeStream.writeObject(serObj);
+            writeStream.flush();
+            writeStream.close();
+
+        } catch (IOException e) {
+
+        }
+    }
+    public void ReadFileToObject(String path){
+        try{
+            FileInputStream readData = new FileInputStream(path);
+            ObjectInputStream readStream = new ObjectInputStream(readData);
+            ReadLocations = (ArrayList<Location>) readStream.readObject();
+            readStream.close();
+
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    };
+
     public native String createVocabulary(int num_images,String path);
 }
