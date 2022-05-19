@@ -53,7 +53,8 @@ public class CreateMapAlgorithm extends Activity {
         for(int i = 0; i< num_image;i++){
             String direction = getDirection((Integer) rotationVectors.get(i),prevAngle);
             prevAngle = (Integer) rotationVectors.get(i);
-            Locations.add(new Location(current_x,current_y,(Integer) rotationVectors.get(i),direction,(String) roomArea.get(i)));
+            Location location = new Location(current_x,current_y,(Integer) rotationVectors.get(i),direction,(String) roomArea.get(i),i);
+            Locations.add(location);
             //this.response +=(int)current_x+" , "+(int)current_y + " rot= "+(Integer) prevAngle+"\n";
             current_x =  prev_x + (step_length * Math.sin(prevAngle));
             current_y =  prev_y + (step_length * Math.cos(prevAngle));

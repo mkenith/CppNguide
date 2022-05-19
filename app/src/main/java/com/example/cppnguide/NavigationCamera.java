@@ -42,8 +42,6 @@ public class NavigationCamera extends AppCompatActivity implements CameraBridgeV
     static {
         System.loadLibrary("cppnguide");
     }
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,7 +119,7 @@ public class NavigationCamera extends AppCompatActivity implements CameraBridgeV
             Imgcodecs.imwrite(imageName, resizeimage);
             String res = navigation(""+getBaseContext().getExternalFilesDir(null).getAbsolutePath());
             result = res.split(",");
-            if(Math.abs(lastIndex - Integer.parseInt(result[0]))<=5){
+            if(Math.abs(lastIndex - Integer.parseInt(result[0]))<=10){
                 lastIndex = Integer.parseInt(result[0]);
                 runOnUiThread(new Runnable() {
                     @SuppressLint("SetTextI18n")

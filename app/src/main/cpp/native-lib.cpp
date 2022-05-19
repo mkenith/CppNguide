@@ -71,7 +71,6 @@ Java_com_example_cppnguide_CreateMapAlgorithm_createVocabulary(JNIEnv *env, jobj
         changeStructure(descriptors, features.back());
     }
 
-    // creating Vocabulary
     const int k = 9;
     const int L = 3;
     const WeightingType weight = TF_IDF;
@@ -110,18 +109,16 @@ extern "C"
 JNIEXPORT jstring JNICALL
 Java_com_example_cppnguide_NavigationCamera_navigation(JNIEnv *env, jobject thiz, jstring path) {
     vector<vector<cv::Mat>>features;
-    //getting orb in each image
     features.clear();
     features.reserve(1);
     cv::Ptr<cv::ORB> orb = cv::ORB::create();
-    int count = 0;
 
     const char *str = env->GetStringUTFChars(path, 0);
     std::string str2 = str;
     std::string filename = str2;
     std::string imageName;
     std::string result;
-  stringstream ss;
+    stringstream ss;
     ss << filename << "/query.jpg";
     cv::Mat image = cv::imread(ss.str(), 0);
     cv::Mat mask;
@@ -138,6 +135,5 @@ Java_com_example_cppnguide_NavigationCamera_navigation(JNIEnv *env, jobject thiz
     res << ret[0].Id << "," << ret[0].Score;
     result = res.str();
     return env->NewStringUTF(result.c_str());
-
 }
 

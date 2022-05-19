@@ -3,6 +3,7 @@ package com.example.cppnguide;
 import org.opencv.core.Mat;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Location implements Serializable{
     private double x;
@@ -10,8 +11,12 @@ public class Location implements Serializable{
     private String name;
     private int Angle;
     private String direction;
+    private ArrayList<Location> edges;
+    private int index;
 
-    public Location(double x, double y,int angle, String direction,String name){
+    public Location(double x, double y,int angle, String direction,String name,int index){
+        this.edges = new ArrayList<>();
+        this.index = index;
         this.x = x;
         this.y = y;
         this.Angle = angle;
@@ -35,6 +40,10 @@ public class Location implements Serializable{
     public int getAngle(){
         return this.Angle;
     }
+    public void addEdge(Location location){
+        edges.add(location);
+    }
+
 
     public String getDirection() {return this.direction; }
 }

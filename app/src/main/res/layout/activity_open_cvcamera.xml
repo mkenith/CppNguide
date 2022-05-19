@@ -28,8 +28,8 @@
             android:id="@+id/step"
             android:layout_width="86dp"
             android:layout_height="21dp"
-            android:layout_marginTop="28dp"
-            android:layout_marginEnd="144dp"
+            android:layout_marginTop="52dp"
+            android:layout_marginEnd="100dp"
             android:text="Step Count: 0"
             android:textColor="#4CAF50"
             android:textSize="14sp"
@@ -37,11 +37,23 @@
             opencv:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+            android:id="@+id/step2"
+            android:layout_width="134dp"
+            android:layout_height="29dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="88dp"
+            android:text="Step Timing:"
+            android:textColor="#4CAF50"
+            android:textSize="14sp"
+            opencv:layout_constraintStart_toStartOf="parent"
+            opencv:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
             android:id="@+id/rooms"
             android:layout_width="122dp"
             android:layout_height="27dp"
             android:layout_marginTop="52dp"
-            android:layout_marginEnd="244dp"
+            android:layout_marginEnd="248dp"
             android:text="Rooms Added: 0 "
             android:textColor="#4CAF50"
             android:textSize="14sp"
@@ -52,8 +64,8 @@
             android:id="@+id/angle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="52dp"
-            android:layout_marginEnd="144dp"
+            android:layout_marginTop="92dp"
+            android:layout_marginEnd="112dp"
             android:text="Directiont: 0"
             android:textColor="#4CAF50"
             android:textSize="14sp"
@@ -81,6 +93,20 @@
             opencv:layout_constraintBottom_toTopOf="@+id/Record"
             opencv:layout_constraintEnd_toEndOf="parent"
             opencv:layout_constraintStart_toStartOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/fragment_placeholder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            opencv:layout_constraintBottom_toBottomOf="parent"
+            opencv:layout_constraintEnd_toEndOf="parent"
+            opencv:layout_constraintHorizontal_bias="0.0"
+            opencv:layout_constraintStart_toStartOf="@+id/camera_view"
+            opencv:layout_constraintTop_toTopOf="@+id/camera_view"
+            opencv:layout_constraintVertical_bias="0.0">
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
