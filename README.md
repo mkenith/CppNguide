@@ -11,7 +11,7 @@ It has been already connfigured with native opencv and ready to run as an aandro
 - [x] Object Detection (tflite - mobilenet)
 - [x] Specify Destination (using Voice Recognition)
 - [x] Step Counter from current location to destination
-- [x] Room recognition (DBW02)
+- [x] Place recognition (DBW02)
 ### Map Creation:
 - [ ] Step detector (Accelerometer Sensor)
 - [x] Corners detection/labeling (Rotation Vector Sensor)
