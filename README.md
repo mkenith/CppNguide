@@ -7,7 +7,7 @@ It has been already connfigured with native opencv and ready to run as an aandro
 ## TODO:
 ### Navigation:
 - [ ] Obstacle avoidance - Midas/depth estimattion
-- [ ] Corners Detection
+- [ ] Direction Guider
 - [x] Object Detection (tflite - mobilenet)
 - [x] Specify Destination (using Voice Recognition)
 - [x] Step Counter from current location to destination
