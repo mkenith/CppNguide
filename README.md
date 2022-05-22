@@ -5,9 +5,9 @@
 This android project utilizes native c++ in opencv and DBOW2 library for image database creation.
 It has been already connfigured with native opencv and ready to run as an aandroid studio project.
 ## TODO:
-### Obstacle avoidance - Midas/depth estimattion
-### Create a vocabulary (DBW02)
-### Step Counter from current location to destination
-### Room Recognition C++ visual bag of words(for limited datasets)
+### - [] Obstacle avoidance - Midas/depth estimattion
+### - [X] Create a vocabulary (DBW02)
+### - [X] Step Counter from current location to destination
+### - [X] Room Recognition (Registered Using PDR)
 ##
 ##
