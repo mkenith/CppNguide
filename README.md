@@ -5,7 +5,7 @@
 This android project utilizes native c++ in opencv and DBOW2 library for image database creation.
 It has been already connfigured with native opencv and ready to run as an aandroid studio project.
 ## TODO:
-## Navigation:
+### Navigation:
 - [X] Obstacle avoidance - Midas/depth estimattion
 
 - [x] Step Counter from current location to destination
