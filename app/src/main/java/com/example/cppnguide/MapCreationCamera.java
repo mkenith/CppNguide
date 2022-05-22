@@ -222,7 +222,6 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
             }
         };
 
-
         add_room.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
