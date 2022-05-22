@@ -6,10 +6,15 @@ This android project utilizes native c++ in opencv and DBOW2 library for image d
 It has been already connfigured with native opencv and ready to run as an aandroid studio project.
 ## TODO:
 ### Navigation:
-- [X] Obstacle avoidance - Midas/depth estimattion
-
+- [ ] Obstacle avoidance - Midas/depth estimattion
+- [ ] Corners Detection
+- [x] Object Detection (tflite - mobilenet)
+- [x] Specify Destination (using Voice Recognition)
 - [x] Step Counter from current location to destination
-- [x] Room Recognition (Registered Using PDR)
-- [x] Create a vocabulary (DBW02)
+- [x] Room recognition (DBW02)
+### Map Creation:
+- [x] Corners detection/labeling
+- [x] Room registration/renaming (PDR)
+- [x] Create a vocabulary (DBW02 c++)
 ##
 ##
