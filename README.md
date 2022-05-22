@@ -13,8 +13,9 @@ It has been already connfigured with native opencv and ready to run as an aandro
 - [x] Step Counter from current location to destination
 - [x] Room recognition (DBW02)
 ### Map Creation:
-- [x] Corners detection/labeling
+- [ ] Step detector (Accelerometer Sensor)
+- [x] Corners detection/labeling (Rotation Vector Sensor)
 - [x] Room registration/renaming (PDR)
-- [x] Create a vocabulary (DBW02 c++)
+- [x] Create a vocabulary/database for place recognition (DBW02 c++) 
 ##
 ##
