@@ -240,6 +240,7 @@ public class NavigationCamera extends AppCompatActivity implements CameraBridgeV
 
                     if((destination_index-currentIndex)!=0) {
                         try {
+
                             //direction.setText("Next Location = " +Locations.get(currentIndex + 1).getDirection()+"-"+Locations.get(currentIndex + 2).getDirection());
                             if (Locations.get(currentIndex + 1).getDirection().equals("right") || Locations.get(currentIndex+2).equals("right")) {
                                 runOnUiThread(new Runnable() {
