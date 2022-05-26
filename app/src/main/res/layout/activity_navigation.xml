@@ -19,10 +19,10 @@
             opencv:camera_id="any"
             opencv:layout_constraintBottom_toBottomOf="parent"
             opencv:layout_constraintEnd_toEndOf="parent"
-            opencv:layout_constraintHorizontal_bias="0.0"
+            opencv:layout_constraintHorizontal_bias="1.0"
             opencv:layout_constraintStart_toStartOf="parent"
             opencv:layout_constraintTop_toTopOf="parent"
-            opencv:layout_constraintVertical_bias="0.0"
+            opencv:layout_constraintVertical_bias="1.0"
             opencv:show_fps="true" />
 
         <TextView
@@ -39,13 +39,25 @@
 
         <TextView
             android:id="@+id/destination"
-            android:layout_width="153dp"
-            android:layout_height="29dp"
-            android:layout_marginTop="20dp"
+            android:layout_width="151dp"
+            android:layout_height="34dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="212dp"
             android:text="Navigating: False"
             android:textColor="#4CAF50"
             android:textSize="14sp"
+            opencv:layout_constraintEnd_toEndOf="parent"
+            opencv:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/direction"
+            android:layout_width="255dp"
+            android:layout_height="86dp"
+            android:layout_marginTop="292dp"
+            android:layout_marginEnd="48dp"
+            android:textColor="#4CAF50"
+            android:textSize="20sp"
+            android:textStyle="bold"
             opencv:layout_constraintEnd_toEndOf="parent"
             opencv:layout_constraintTop_toTopOf="parent" />
 
@@ -65,8 +77,8 @@
             android:id="@+id/index"
             android:layout_width="122dp"
             android:layout_height="27dp"
-            android:layout_marginTop="52dp"
-            android:layout_marginEnd="244dp"
+            android:layout_marginTop="60dp"
+            android:layout_marginEnd="240dp"
             android:text="Index: 0 "
             android:textColor="#4CAF50"
             android:textSize="14sp"

@@ -50,9 +50,10 @@ public class CreateMapAlgorithm extends Activity {
         double prev_y = 0;
         double step_length = 1;
         int prevAngle = 0;
+        int prevSensorAngle = (Integer) rotationVectors.get(0);
         for(int i = 0; i< num_image;i++){
-            String direction = getDirection((Integer) rotationVectors.get(i),prevAngle);
-            prevAngle = (Integer) rotationVectors.get(i);
+            String direction = getDirection((Integer) rotationVectors.get(i),prevSensorAngle);
+            prevSensorAngle = (Integer) rotationVectors.get(i);
             Location location = new Location(current_x,current_y,(Integer) rotationVectors.get(i),direction,(String) roomArea.get(i),i);
             Locations.add(location);
             //this.response +=(int)current_x+" , "+(int)current_y + " rot= "+(Integer) prevAngle+"\n";
@@ -65,7 +66,20 @@ public class CreateMapAlgorithm extends Activity {
 
         WriteObjectToFile((Object) Locations);
         ReadFileToObject(baseStorage+"/Files/Locations.ser");
-        this.response = ""+ReadLocations.size()+","+ReadLocations.get(ReadLocations.size()-1).getX()+":"+ReadLocations.get(ReadLocations.size()-1).getY();
+        for(Location l: Locations){
+
+          if(l.getDirection()=="right"){
+              this.response+=",r";
+          }
+          if(l.getDirection()=="left"){
+              this.response+=",l";
+          }
+          if(l.getDirection()=="forward"){
+              this.response+=",f";
+          }
+
+        }
+        //this.response = ""+ReadLocations.size()+","+ReadLocations.get(ReadLocations.size()-1).getX()+":"+ReadLocations.get(ReadLocations.size()-1).getY();
 
     }
     public  String getDirection(int current,int target){

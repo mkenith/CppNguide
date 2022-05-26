@@ -147,6 +147,8 @@ public class ObjectDetector {
  */
            // if(hasClass) {
                 // define threshold for score
+            if(labelList.get(i).equals("person") || labelList.get(i).equals("dog") || labelList.get(i).equals("cat") || labelList.get(i).equals("")){
+
                 if (score_value > 0.5) {
                     Object box1 = Array.get(Array.get(value, 0), i);
                     // we are multiplying it with Original height and width of frame
@@ -163,6 +165,7 @@ public class ObjectDetector {
                 }
                 hasClass = false;
             //}
+            }
 
         }
         // select device and run

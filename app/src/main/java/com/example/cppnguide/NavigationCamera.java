@@ -53,6 +53,11 @@ public class NavigationCamera extends AppCompatActivity implements CameraBridgeV
     private TextView navigation;
     private TextToSpeech textToSpeech;
     private TextView steps_estimation;
+    private int lastDirectionIndex = 0;
+    private boolean lastDirection = false;
+    private TextView direction;
+    private boolean speakdirection = false;
+    private String next1;
 
     private Button speak;
     static {
@@ -74,6 +79,7 @@ public class NavigationCamera extends AppCompatActivity implements CameraBridgeV
         location = findViewById(R.id.location);
         speak = findViewById(R.id.speak);
         navigation = findViewById(R.id.destination);
+        direction = findViewById(R.id.direction);
         Locations = new ArrayList<>();
         path = new ArrayList<>();
         steps_estimation = findViewById(R.id.step_estimation);
@@ -83,10 +89,10 @@ public class NavigationCamera extends AppCompatActivity implements CameraBridgeV
 
         try{
             objectDetector = new ObjectDetector(getAssets(),"ssd_mobilenet.tflite","labelmap.txt",300);
-            Toast.makeText(getBaseContext(), "Loaded object detection Model", Toast.LENGTH_SHORT).show();
+           // Toast.makeText(getBaseContext(), "Loaded object detection Model", Toast.LENGTH_SHORT).show();
         }
         catch (Exception e){
-            Toast.makeText(getBaseContext(), "Not loaded object detection Model", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getBaseContext(), "Not loaded object detection Model", Toast.LENGTH_SHORT).show();
         }
 
         speak.setOnClickListener(new View.OnClickListener() {
@@ -132,11 +138,24 @@ public class NavigationCamera extends AppCompatActivity implements CameraBridgeV
                         }
                     }
                 if(hasRoom){
-                    Toast.makeText(getBaseContext(),"Room is found! Navigating to room - "+ destination,Toast.LENGTH_LONG).show();
+                   // Toast.makeText(getBaseContext(),"Room is found! Navigating to room - "+ destination,Toast.LENGTH_LONG).show();
                     navigating = true;
+                    textToSpeech = new TextToSpeech(getBaseContext(), new TextToSpeech.OnInitListener() {
+                        @Override
+                        public void onInit(int i) {
+                            textToSpeech.setLanguage(Locale.US);
+                            textToSpeech.speak("Navigating to "+destination, TextToSpeech.QUEUE_FLUSH, null, null);
+                        }
+                    });
                 }
                 else{
-                    Toast.makeText(getBaseContext(),"Room is not found!" ,Toast.LENGTH_LONG).show();
+                    textToSpeech = new TextToSpeech(getBaseContext(), new TextToSpeech.OnInitListener() {
+                        @Override
+                        public void onInit(int i) {
+                            textToSpeech.setLanguage(Locale.US);
+                            textToSpeech.speak("Place not found. Please try again.", TextToSpeech.QUEUE_FLUSH, null, null);
+                        }
+                    });
                     destination = "";
                 }
             }
@@ -193,27 +212,10 @@ public class NavigationCamera extends AppCompatActivity implements CameraBridgeV
                 Imgcodecs.imwrite(imageName, resizeimage);
                 String res = navigation("" + getBaseContext().getExternalFilesDir(null).getAbsolutePath());
                 result = res.split(",");
-                if (Math.abs(lastIndex - Integer.parseInt(result[0])) <= 10 && Integer.parseInt(result[0])>=currentIndex && Integer.parseInt(result[0])<=destination_index ) {
-                    lastIndex = Integer.parseInt(result[0]);
+                speakdirection = false;
+
+                if (Math.abs(currentIndex - Integer.parseInt(result[0])) <= 10 && Integer.parseInt(result[0])>=currentIndex && Integer.parseInt(result[0])<=destination_index ) {
                     currentIndex = Integer.parseInt(result[0]);
-                    if(destination_index == currentIndex){
-                        navigating = false;
-                        runOnUiThread(new Runnable() {
-                            @SuppressLint("SetTextI18n")
-                            @Override
-                            public void run() {
-                                 textToSpeech = new TextToSpeech(getBaseContext(), new TextToSpeech.OnInitListener() {
-                                    @Override
-                                    public void onInit(int i) {
-                                        textToSpeech.setLanguage(Locale.US);
-                                        textToSpeech.speak("Arrived at " +destination,TextToSpeech.QUEUE_FLUSH,null,null);
-                                    }
-                                });
-
-
-                            }
-                        });
-                    }
                     runOnUiThread(new Runnable() {
                         @SuppressLint("SetTextI18n")
                         @Override
@@ -223,8 +225,77 @@ public class NavigationCamera extends AppCompatActivity implements CameraBridgeV
                             score.setText("Score: " + result[1]);
                             location.setText("Location: " + (int) Locations.get(lastIndex).getX() + "," + (int) Locations.get(lastIndex).getY());
                             steps_estimation.setText("Remaining Steps: "+(destination_index - currentIndex));
+                            if((destination_index-currentIndex)!=0 && (destination_index-currentIndex)%2==0 && lastIndex!=currentIndex){
+                                textToSpeech = new TextToSpeech(getBaseContext(), new TextToSpeech.OnInitListener() {
+                                    @Override
+                                    public void onInit(int i) {
+                                        textToSpeech.setLanguage(Locale.US);
+                                        textToSpeech.speak((destination_index-currentIndex)+" steps ", TextToSpeech.QUEUE_FLUSH, null, null);
+                                    }
+                                });
+                                lastIndex = currentIndex;
+                            }
                         }
                     });
+
+                    if((destination_index-currentIndex)!=0) {
+                        try {
+                            //direction.setText("Next Location = " +Locations.get(currentIndex + 1).getDirection()+"-"+Locations.get(currentIndex + 2).getDirection());
+                            if (Locations.get(currentIndex + 1).getDirection().equals("right") || Locations.get(currentIndex+2).equals("right")) {
+                                runOnUiThread(new Runnable() {
+                                    @SuppressLint("SetTextI18n")
+                                    @Override
+                                    public void run() {
+                                        textToSpeech = new TextToSpeech(getBaseContext(), new TextToSpeech.OnInitListener() {
+                                            @Override
+                                            public void onInit(int i) {
+                                                textToSpeech.setLanguage(Locale.US);
+                                                textToSpeech.speak("turn right", TextToSpeech.QUEUE_FLUSH, null, null);
+                                                //direction.setText("turn right\n"+"-------->>>");
+                                            }
+                                        });
+                                    }
+                                });
+
+                            } else if (Locations.get(currentIndex + 1).getDirection().equals("left") || Locations.get(currentIndex+2).equals("left")) {
+                                runOnUiThread(new Runnable() {
+                                    @SuppressLint("SetTextI18n")
+                                    @Override
+                                    public void run() {
+                                        textToSpeech = new TextToSpeech(getBaseContext(), new TextToSpeech.OnInitListener() {
+                                            @Override
+                                            public void onInit(int i) {
+                                                textToSpeech.setLanguage(Locale.US);
+                                                textToSpeech.speak("turn left", TextToSpeech.QUEUE_FLUSH, null, null);
+                                                //direction.setText("turn left\n"+"<<<--------");
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+
+                        } catch (Exception e) {
+
+                        }
+                    }
+
+                    if(destination_index == currentIndex){
+                        navigating = false;
+                        runOnUiThread(new Runnable() {
+                            @SuppressLint("SetTextI18n")
+                            @Override
+                            public void run() {
+                                textToSpeech = new TextToSpeech(getBaseContext(), new TextToSpeech.OnInitListener() {
+                                    @Override
+                                    public void onInit(int i) {
+                                        textToSpeech.setLanguage(Locale.US);
+                                        textToSpeech.speak("Arrived at " +destination,TextToSpeech.QUEUE_FLUSH,null,null);
+                                    }
+                                });
+
+                            }
+                        });
+                    }
                 }
             }
             count++;
