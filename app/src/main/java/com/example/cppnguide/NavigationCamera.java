@@ -84,15 +84,26 @@ public class NavigationCamera extends AppCompatActivity implements CameraBridgeV
         path = new ArrayList<>();
         steps_estimation = findViewById(R.id.step_estimation);
 
-        LoadFile();
-        Toast.makeText(getBaseContext(),""+getBaseContext().getExternalFilesDir(null).getAbsolutePath(),Toast.LENGTH_LONG).show();
 
-        try{
-            objectDetector = new ObjectDetector(getAssets(),"ssd_mobilenet.tflite","labelmap.txt",300);
-           // Toast.makeText(getBaseContext(), "Loaded object detection Model", Toast.LENGTH_SHORT).show();
-        }
-        catch (Exception e){
-            //Toast.makeText(getBaseContext(), "Not loaded object detection Model", Toast.LENGTH_SHORT).show();
+        textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int i) {
+                textToSpeech.setLanguage(Locale.US);
+                textToSpeech.speak("Navigation.",TextToSpeech.QUEUE_FLUSH,null,null);
+            }
+        });
+
+        if(Constant.OBJECT_DETECTION) {
+
+            LoadFile();
+            Toast.makeText(getBaseContext(), "" + getBaseContext().getExternalFilesDir(null).getAbsolutePath(), Toast.LENGTH_LONG).show();
+
+            try {
+                objectDetector = new ObjectDetector(getAssets(), "ssd_mobilenet.tflite", "labelmap.txt", 300);
+                Toast.makeText(getBaseContext(), "Loaded object detection Model", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Toast.makeText(getBaseContext(), "Not loaded object detection Model", Toast.LENGTH_SHORT).show();
+            }
         }
 
         speak.setOnClickListener(new View.OnClickListener() {
@@ -301,7 +312,9 @@ public class NavigationCamera extends AppCompatActivity implements CameraBridgeV
             }
             count++;
         }
-       // mRGBA = objectDetector.recognizeImage(mRGBA);
+        if(Constant.OBJECT_DETECTION) {
+            mRGBA = objectDetector.recognizeImage(mRGBA);
+        }
         return mRGBA;
     }
 

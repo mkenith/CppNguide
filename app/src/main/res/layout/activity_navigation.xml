@@ -19,33 +19,33 @@
             opencv:camera_id="any"
             opencv:layout_constraintBottom_toBottomOf="parent"
             opencv:layout_constraintEnd_toEndOf="parent"
-            opencv:layout_constraintHorizontal_bias="1.0"
+            opencv:layout_constraintHorizontal_bias="0.0"
             opencv:layout_constraintStart_toStartOf="parent"
             opencv:layout_constraintTop_toTopOf="parent"
-            opencv:layout_constraintVertical_bias="1.0"
+            opencv:layout_constraintVertical_bias="0.0"
             opencv:show_fps="true" />
 
         <TextView
             android:id="@+id/score"
             android:layout_width="153dp"
             android:layout_height="29dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="48dp"
+            android:layout_marginTop="52dp"
+            android:layout_marginEnd="84dp"
             android:text="Score: 0"
             android:textColor="#4CAF50"
-            android:textSize="14sp"
+            android:textSize="20sp"
             opencv:layout_constraintEnd_toEndOf="parent"
             opencv:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/destination"
-            android:layout_width="151dp"
-            android:layout_height="34dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="212dp"
+            android:layout_width="233dp"
+            android:layout_height="31dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="4dp"
             android:text="Navigating: False"
             android:textColor="#4CAF50"
-            android:textSize="14sp"
+            android:textSize="20sp"
             opencv:layout_constraintEnd_toEndOf="parent"
             opencv:layout_constraintTop_toTopOf="parent" />
 
@@ -63,13 +63,13 @@
 
         <TextView
             android:id="@+id/step_estimation"
-            android:layout_width="153dp"
-            android:layout_height="29dp"
-            android:layout_marginTop="88dp"
-            android:layout_marginEnd="212dp"
+            android:layout_width="232dp"
+            android:layout_height="44dp"
+            android:layout_marginTop="164dp"
+            android:layout_marginEnd="4dp"
             android:text="Remaining Steps: "
             android:textColor="#4CAF50"
-            android:textSize="14sp"
+            android:textSize="20sp"
             opencv:layout_constraintEnd_toEndOf="parent"
             opencv:layout_constraintTop_toTopOf="parent" />
 
@@ -77,23 +77,23 @@
             android:id="@+id/index"
             android:layout_width="122dp"
             android:layout_height="27dp"
-            android:layout_marginTop="60dp"
-            android:layout_marginEnd="240dp"
+            android:layout_marginTop="92dp"
+            android:layout_marginEnd="116dp"
             android:text="Index: 0 "
             android:textColor="#4CAF50"
-            android:textSize="14sp"
+            android:textSize="20sp"
             opencv:layout_constraintEnd_toEndOf="parent"
             opencv:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/location"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="60dp"
-            android:layout_marginEnd="132dp"
+            android:layout_width="177dp"
+            android:layout_height="29dp"
+            android:layout_marginTop="128dp"
+            android:layout_marginEnd="60dp"
             android:text="Location: 0"
             android:textColor="#4CAF50"
-            android:textSize="14sp"
+            android:textSize="20sp"
             opencv:layout_constraintEnd_toEndOf="parent"
             opencv:layout_constraintTop_toTopOf="parent" />
 

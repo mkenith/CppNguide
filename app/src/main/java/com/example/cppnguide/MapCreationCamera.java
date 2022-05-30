@@ -198,7 +198,7 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
                                 str = editTextsRenameRoom.get(count).getText().toString();
                                 if(!str.equals("")) {
                                     rooms.set(key, str);
-                                    Toast.makeText(getBaseContext(), "renamed: index" + key + " :" + str, Toast.LENGTH_LONG).show();
+                                    //Toast.makeText(getBaseContext(), "renamed: index" + key + " :" + str, Toast.LENGTH_LONG).show();
                                 }
                                 count++;
                             }
@@ -249,7 +249,7 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
                     Context context = getBaseContext();
                     LinearLayout layout = new LinearLayout(context);
                     layout.setOrientation(LinearLayout.VERTICAL);
-                    Toast.makeText(getBaseContext(),"size = "+roomCount,Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getBaseContext(),"size = "+roomCount,Toast.LENGTH_LONG).show();
 
                     for( int key : renameRooms.keySet()) {
                         //Toast.makeText(getBaseContext(),"index = "+key+",name = "+renameRooms.get(key),Toast.LENGTH_LONG).show();
@@ -303,7 +303,7 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
                     stepCount = 0;
 
                     roomsView.setText("Rooms Added: 0");
-                    step_view.setText("Steps: 0");
+                    //step_view.setText("Steps: 0");
                     record.setBackgroundColor(Color.RED);
                     record.setText("Recording...");
                     isRecording = true;
@@ -369,7 +369,7 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
                         stepCount++;
                         consumed = true;
                         rotationVectors.add(angle);
-                        step_view.setText("Steps: " + stepCount);
+                        //step_view.setText("Steps: " + stepCount);
 
                     }
                 }

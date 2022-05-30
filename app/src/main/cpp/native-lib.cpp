@@ -36,7 +36,7 @@ void changeStructure(const cv::Mat &plain, vector<cv::Mat> &out)
 extern "C" JNIEXPORT jstring
 Java_com_example_cppnguide_MainActivity_stringFromJNI(JNIEnv *env, jobject thiz) {
     // TODO: implement stringFromJNI()
-    std::string hello = "GG SIR";
+    std::string hello = "Indoor Navigation For Visually Impaired";
     return env->NewStringUTF(hello.c_str());
 
 }
