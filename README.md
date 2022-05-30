@@ -20,4 +20,5 @@ It has been already configured with native opencv and ready to run as an android
 ##
 ##
 debug app_31-05-2022(v2) - https://drive.google.com/file/d/1mwU47m7GnqQ7OasOZs-CRTZg6gNrP-zd/view?usp=sharing
+#
 debug app_30-05-2022(v1) - https://drive.google.com/file/d/1PyT3VVjhc0gGW658JxkmOd9BVlY05LN3/view?usp=sharing
