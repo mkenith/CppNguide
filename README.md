@@ -19,3 +19,4 @@ It has been already connfigured with native opencv and ready to run as an androi
 - [x] Create a vocabulary/database for place recognition (DBW02 c++) 
 ##
 ##
+debug app_30-05-2022 - https://drive.google.com/file/d/1PyT3VVjhc0gGW658JxkmOd9BVlY05LN3/view?usp=sharing
