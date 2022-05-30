@@ -11,7 +11,11 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -26,12 +30,13 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.checkerframework.checker.signedness.qual.Constant;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
@@ -46,6 +51,8 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -70,13 +77,6 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
     private int prevStepCount =0;
     private boolean detected = false;
     private boolean consumed = false;
-
-
-    private double currentX = 0;
-    private double currentY = 0;
-    private double prevX = 0;
-    private double prevY = 0;
-    private int prevAngle = 0;
 
 
     private Mat prev;
@@ -107,11 +107,15 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
     private List<EditText> editTextsRenameRoom;
 
     private String step = "Right";
-
     private TextView step_timing;
 
+    private ImageView mapView;
+
+    private Bitmap bitmap;
+    private Canvas canvas;
 
 
+    private double current_x = 0,current_y = 0,prev_x = 0,prev_y = 0,prevAngle= 0;
 
     private BaseLoaderCallback baseLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -152,6 +156,14 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
         taskEditText = new EditText(this);
         dialog = new AlertDialog.Builder(MapCreationCamera.this);
 
+        bitmap = Bitmap.createBitmap(1000, 1000, Bitmap.Config.ARGB_8888);
+        canvas = new Canvas(bitmap);
+        canvas.drawColor(Color.WHITE);
+        prev_x = canvas.getWidth()/2;
+        prev_y = canvas.getHeight()/2;
+
+
+        mapView = findViewById(R.id.mapView);
         textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int i) {
@@ -172,18 +184,25 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
                         imageCount = 0;
                         renameRooms.clear();
                         editTextsRenameRoom.clear();
+                        current_x = 0;
+                        current_y = 0;
+                        prev_x = 500;
+                        prev_y = 500;
                         Toast.makeText(getBaseContext(),"Response: "+ cm.response,Toast.LENGTH_LONG).show();
                         break;
 
                     case DialogInterface.BUTTON_NEGATIVE:
                         rooms.clear();
                         renameRooms.clear();
+                        current_x = 0;
+                        current_y = 0;
+                        prev_x = 100;
+                        prev_y = 100;
                         deleteRecursive(new File(baseStorage));
                         break;
                 }
             }
         };
-
 
         DialogInterface.OnClickListener edit = new DialogInterface.OnClickListener() {
             @Override
@@ -213,6 +232,10 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
                         num_image = 0;
                         stepCount = 0;
                         imageCount = 0;
+                        current_x = 0;
+                        current_y = 0;
+                        prev_x = 100;
+                        prev_y = 100;
                         rooms.clear();
                         renameRooms.clear();
                         editTextsRenameRoom.clear();
@@ -225,10 +248,17 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
         add_room.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Paint paint = new Paint();
+                paint.setColor(Color.GREEN);
+                paint.setStyle(Paint.Style.FILL_AND_STROKE);
+                paint.setStrokeWidth(5);
+                paint.setAntiAlias(true);
+                canvas.drawCircle((float)current_x,(float)current_y,2,paint);
+
                 roomCount+=1;
-                roomsView.setText("Rooms Added: "+(roomCount));
+                roomsView.setText("Destinations Added: "+(roomCount));
                 added_room = true;
-                textToSpeech.speak("Room Added.",TextToSpeech.QUEUE_FLUSH,null,null);
+                textToSpeech.speak("Destination Added.",TextToSpeech.QUEUE_FLUSH,null,null);
 
             }
         });
@@ -248,19 +278,28 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
                     }
                     Context context = getBaseContext();
                     LinearLayout layout = new LinearLayout(context);
+                    ScrollView scrollView = new ScrollView(context);
                     layout.setOrientation(LinearLayout.VERTICAL);
+                    scrollView.addView(layout);
                     //Toast.makeText(getBaseContext(),"size = "+roomCount,Toast.LENGTH_LONG).show();
 
                     for( int key : renameRooms.keySet()) {
                         //Toast.makeText(getBaseContext(),"index = "+key+",name = "+renameRooms.get(key),Toast.LENGTH_LONG).show();
                         final EditText titleBox = new EditText(context);
-                        titleBox.setHint("Registered Location no. "+renameRooms.get(key));
+                        titleBox.setHint("Rename Location no. "+renameRooms.get(key));
                         editTextsRenameRoom.add(titleBox);
                         layout.addView(titleBox); // Notice this is an add method
 
                     }
-                    dialog.setTitle("Rename Registered Destination").setMessage("").setView(layout).setPositiveButton("Ok", edit).setNegativeButton("Cancel",edit).show();
+                    if(roomCount>0) {
+                        dialog.setTitle("Rename Registered Destination").setView(scrollView).setPositiveButton("Ok", edit).setNegativeButton("Cancel", edit).show();
+                    }
+                    else{
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MapCreationCamera.this);
+                        builder.setMessage("Do you want to create the map?").setPositiveButton("Yes", dialogClickListener)
+                                .setNegativeButton("No", dialogClickListener).show();
 
+                    }
                     record.setBackgroundColor(Color.BLUE);
                     record.setText("Record");
                     isRecording = false;
@@ -433,13 +472,53 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
             }
             */
             if(count%10 == 0) {
+                runOnUiThread(new Runnable() {
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void run() {
+                        //Map View
+                        double step_length = 10;
+                        double recordedLastX = prev_x;
+                        double recordedLastY = prev_y;
+                        current_x =  prev_x + (step_length * Math.sin(prevAngle));
+                        current_y =  prev_y + (step_length * Math.cos(prevAngle));
+                        prev_x = current_x;
+                        prev_y = current_y;
+                        prevAngle = (int)Math.toRadians(angle);
+
+                        if(Constant.MAP_VIEW_MAP_CREATION) {
+                            Paint paint = new Paint();
+                            paint.setColor(Color.RED);
+                            paint.setStyle(Paint.Style.FILL_AND_STROKE);
+                            paint.setStrokeWidth(3);
+                            paint.setAntiAlias(true);
+                            canvas.drawLine((float) recordedLastX,(float) recordedLastY, (float) current_x, (float) current_y, paint);
+                            canvas.drawCircle((float)current_x,(float)current_y,2,paint);
+                            /*
+                            if(current_x<0 || current_y<0 || current_y>bitmap.getHeight() || current_x>bitmap.getWidth()) {
+                                bitmap = Bitmap.createScaledBitmap(bitmap,bitmap.getWidth()+10,bitmap.getHeight()+10,false);
+                                canvas.scale(canvas.getWidth()+20,canvas.getHeight()+20);
+                            }
+                             */
+                            try (FileOutputStream out = new FileOutputStream(getBaseContext().getExternalFilesDir(null).getAbsolutePath()+"/mapImage.png")) {
+                                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
+                                // PNG is a lossless format, the compression factor (100) is ignored
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            mapView.setImageBitmap(bitmap);
+                        }
+
+                    }
+                });
+
                 if(step.equals("Left")){
                     step= "Right";
                     runOnUiThread(new Runnable() {
                         @SuppressLint("SetTextI18n")
                         @Override
                         public void run() {
-                            step_timing.setText("Step Timing: Right");
+                            step_timing.setText("Timing: Step Right");
                         }
                     });
                 }
@@ -449,7 +528,7 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
                         @SuppressLint("SetTextI18n")
                         @Override
                         public void run() {
-                            step_timing.setText("Step Timing: Left");
+                            step_timing.setText("Timing: Step Left");
                         }
                     });
                 }

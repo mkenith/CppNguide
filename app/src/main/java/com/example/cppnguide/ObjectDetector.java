@@ -149,7 +149,7 @@ public class ObjectDetector {
                 // define threshold for score
             if(labelList.get((int)class_value).equals("person") || labelList.get((int)class_value).equals("dog") || labelList.get((int)class_value).equals("cat") || labelList.get((int)class_value).equals("potted plant") || labelList.get((int)class_value).equals("chair") || labelList.get((int)class_value).equals("bed")){
 
-                if (score_value > 0.5) {
+                if (score_value > 0.6) {
                     Object box1 = Array.get(Array.get(value, 0), i);
                     // we are multiplying it with Original height and width of frame
                     float top = (float) Array.get(box1, 0) * height;

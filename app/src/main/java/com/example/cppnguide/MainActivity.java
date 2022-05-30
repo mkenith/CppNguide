@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private ObjectDetector objectDetector;
     private CheckBox checkBox;
+    private CheckBox checkBox2;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -57,6 +58,19 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else{
                     Constant.OBJECT_DETECTION = false;
+                }
+            }
+        });
+        checkBox2 = findViewById(R.id.map_view_map_creation);
+
+        checkBox2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(compoundButton.isChecked()){
+                    Constant.MAP_VIEW_MAP_CREATION = true;
+                }
+                else{
+                    Constant.MAP_VIEW_MAP_CREATION = false;
                 }
             }
         });

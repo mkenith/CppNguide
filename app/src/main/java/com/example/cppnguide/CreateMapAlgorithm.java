@@ -49,7 +49,7 @@ public class CreateMapAlgorithm extends Activity {
         double prev_x = 0;
         double prev_y = 0;
         double step_length = 1;
-        int prevAngle = 0;
+        double prevAngle = 0;
         int prevSensorAngle = (Integer) rotationVectors.get(0);
         for(int i = 0; i< num_image;i++){
             String direction = getDirection((Integer) rotationVectors.get(i),prevSensorAngle);
@@ -61,7 +61,7 @@ public class CreateMapAlgorithm extends Activity {
             current_y =  prev_y + (step_length * Math.cos(prevAngle));
             prev_x = current_x;
             prev_y = current_y;
-            prevAngle = (int)Math.toRadians((Integer)rotationVectors.get(i));
+            prevAngle = Math.toRadians((Integer)rotationVectors.get(i));
         }
 
         WriteObjectToFile((Object) Locations);

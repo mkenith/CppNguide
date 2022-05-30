@@ -18,7 +18,7 @@
             opencv:camera_id="any"
             opencv:layout_constraintBottom_toBottomOf="parent"
             opencv:layout_constraintEnd_toEndOf="parent"
-            opencv:layout_constraintHorizontal_bias="1.0"
+            opencv:layout_constraintHorizontal_bias="0.0"
             opencv:layout_constraintStart_toStartOf="parent"
             opencv:layout_constraintTop_toTopOf="parent"
             opencv:layout_constraintVertical_bias="0.0"
@@ -53,7 +53,7 @@
             android:layout_height="30dp"
             android:layout_marginTop="64dp"
             android:layout_marginEnd="4dp"
-            android:text="Place Registered: 0 "
+            android:text="Destination Added: 0"
             android:textColor="#4CAF50"
             android:textSize="20sp"
             opencv:layout_constraintEnd_toEndOf="parent"
@@ -82,6 +82,15 @@
             opencv:layout_constraintStart_toStartOf="parent"
             tools:text="Record" />
 
+        <ImageView
+            android:id="@+id/mapView"
+            android:layout_width="168dp"
+            android:layout_height="222dp"
+            android:layout_marginTop="4dp"
+            opencv:layout_constraintStart_toStartOf="parent"
+            opencv:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@tools:sample/avatars" />
+
         <Button
             android:id="@+id/addRoom"
             android:layout_width="165dp"
@@ -98,13 +107,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:visibility="gone"
+            android:visibility="visible"
             opencv:layout_constraintBottom_toBottomOf="parent"
             opencv:layout_constraintEnd_toEndOf="parent"
             opencv:layout_constraintHorizontal_bias="0.0"
             opencv:layout_constraintStart_toStartOf="@+id/camera_view"
             opencv:layout_constraintTop_toTopOf="@+id/camera_view"
-            opencv:layout_constraintVertical_bias="0.0">
+            opencv:layout_constraintVertical_bias="1.0">
 
         </LinearLayout>
 

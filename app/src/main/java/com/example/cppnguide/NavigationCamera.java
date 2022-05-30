@@ -263,7 +263,7 @@ public class NavigationCamera extends AppCompatActivity implements CameraBridgeV
                                             public void onInit(int i) {
                                                 textToSpeech.setLanguage(Locale.US);
                                                 textToSpeech.speak("turn right", TextToSpeech.QUEUE_FLUSH, null, null);
-                                                //direction.setText("turn right\n"+"-------->>>");
+                                                direction.setText("-------->>>");
                                             }
                                         });
                                     }
@@ -279,7 +279,7 @@ public class NavigationCamera extends AppCompatActivity implements CameraBridgeV
                                             public void onInit(int i) {
                                                 textToSpeech.setLanguage(Locale.US);
                                                 textToSpeech.speak("turn left", TextToSpeech.QUEUE_FLUSH, null, null);
-                                                //direction.setText("turn left\n"+"<<<--------");
+                                                direction.setText("<<<--------");
                                             }
                                         });
                                     }
