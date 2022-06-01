@@ -147,23 +147,28 @@ public class ObjectDetector {
  */
            // if(hasClass) {
                 // define threshold for score
-            if(labelList.get((int)class_value).equals("person") || labelList.get((int)class_value).equals("dog") || labelList.get((int)class_value).equals("cat") || labelList.get((int)class_value).equals("potted plant") || labelList.get((int)class_value).equals("chair") || labelList.get((int)class_value).equals("bed")){
+            try {
+                if (labelList.get((int) class_value).equals("person") || labelList.get((int) class_value).equals("dog") || labelList.get((int) class_value).equals("cat") || labelList.get((int) class_value).equals("potted plant") || labelList.get((int) class_value).equals("chair") || labelList.get((int) class_value).equals("bed")) {
 
-                if (score_value > 0.6) {
-                    Object box1 = Array.get(Array.get(value, 0), i);
-                    // we are multiplying it with Original height and width of frame
-                    float top = (float) Array.get(box1, 0) * height;
-                    float left = (float) Array.get(box1, 1) * width;
-                    float bottom = (float) Array.get(box1, 2) * height;
-                    float right = (float) Array.get(box1, 3) * width;
-                    // draw rectangle in Original frame //  starting point    // ending point of box  // color of box       thickness
-                    Imgproc.rectangle(rotated_mat_image, new Point(left, top), new Point(right, bottom), new Scalar(0, 255, 0, 255), 2);
-                    // write text on frame
-                    // string of class name of object  // starting point                         // color of text           // size of text
-                    Imgproc.putText(rotated_mat_image, labelList.get((int) class_value), new Point(left, top), 3, 1, new Scalar(255, 0, 0, 255), 2);
+                    if (score_value > 0.6) {
+                        Object box1 = Array.get(Array.get(value, 0), i);
+                        // we are multiplying it with Original height and width of frame
+                        float top = (float) Array.get(box1, 0) * height;
+                        float left = (float) Array.get(box1, 1) * width;
+                        float bottom = (float) Array.get(box1, 2) * height;
+                        float right = (float) Array.get(box1, 3) * width;
+                        // draw rectangle in Original frame //  starting point    // ending point of box  // color of box       thickness
+                        Imgproc.rectangle(rotated_mat_image, new Point(left, top), new Point(right, bottom), new Scalar(0, 255, 0, 255), 2);
+                        // write text on frame
+                        // string of class name of object  // starting point                         // color of text           // size of text
+                        Imgproc.putText(rotated_mat_image, labelList.get((int) class_value), new Point(left, top), 3, 1, new Scalar(255, 0, 0, 255), 2);
+                    }
+                    hasClass = false;
+                    //}
                 }
-                hasClass = false;
-            //}
+            }
+            catch (Exception e){
+
             }
 
         }

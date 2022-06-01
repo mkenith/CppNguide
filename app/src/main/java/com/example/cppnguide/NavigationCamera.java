@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
@@ -13,6 +15,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,12 +29,12 @@ import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 public class NavigationCamera extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
     private static final String TAG = "Navigation";
@@ -58,6 +61,7 @@ public class NavigationCamera extends AppCompatActivity implements CameraBridgeV
     private TextView direction;
     private boolean speakdirection = false;
     private String next1;
+    private ImageView nav_map_view;
 
     private Button speak;
     static {
@@ -83,7 +87,7 @@ public class NavigationCamera extends AppCompatActivity implements CameraBridgeV
         Locations = new ArrayList<>();
         path = new ArrayList<>();
         steps_estimation = findViewById(R.id.step_estimation);
-
+        nav_map_view = findViewById(R.id.nav_mapView);
 
         textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
@@ -93,7 +97,7 @@ public class NavigationCamera extends AppCompatActivity implements CameraBridgeV
             }
         });
 
-        if(Constant.OBJECT_DETECTION) {
+        if(Global.OBJECT_DETECTION) {
 
             LoadFile();
             Toast.makeText(getBaseContext(), "" + getBaseContext().getExternalFilesDir(null).getAbsolutePath(), Toast.LENGTH_LONG).show();
@@ -104,6 +108,17 @@ public class NavigationCamera extends AppCompatActivity implements CameraBridgeV
             } catch (Exception e) {
                 Toast.makeText(getBaseContext(), "Not loaded object detection Model", Toast.LENGTH_SHORT).show();
             }
+        }
+        if(Global.MAP_VIEW_NAVIGATION){
+            Toast.makeText(getBaseContext(),Global.APP_BASE_STORAGE+"",Toast.LENGTH_LONG).show();
+            File image = new File(Global.APP_BASE_STORAGE+"/mapImage.png");
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(),bmOptions);
+            bitmap = Bitmap.createScaledBitmap(bitmap,1000,1000,true);
+            nav_map_view.setImageBitmap(bitmap);
+        }
+        else{
+            Toast.makeText(getBaseContext(),"Check Display Map(Navigation) and Auto use Latest Map to view Map in Navigation.",Toast.LENGTH_LONG).show();
         }
 
         speak.setOnClickListener(new View.OnClickListener() {
@@ -225,7 +240,7 @@ public class NavigationCamera extends AppCompatActivity implements CameraBridgeV
                 result = res.split(",");
                 speakdirection = false;
 
-                if (Math.abs(currentIndex - Integer.parseInt(result[0])) <= 10 && Integer.parseInt(result[0])>=currentIndex && Integer.parseInt(result[0])<=destination_index ) {
+                if (Math.abs(currentIndex - Integer.parseInt(result[0])) <= 10 ) {
                     currentIndex = Integer.parseInt(result[0]);
                     runOnUiThread(new Runnable() {
                         @SuppressLint("SetTextI18n")
@@ -253,7 +268,7 @@ public class NavigationCamera extends AppCompatActivity implements CameraBridgeV
                         try {
 
                             //direction.setText("Next Location = " +Locations.get(currentIndex + 1).getDirection()+"-"+Locations.get(currentIndex + 2).getDirection());
-                            if (Locations.get(currentIndex + 1).getDirection().equals("right") || Locations.get(currentIndex+2).equals("right")) {
+                            if ((destination_index!=currentIndex+1 || destination_index!=currentIndex+2)  && Locations.get(currentIndex + 1).getDirection().equals("right") || Locations.get(currentIndex+2).equals("right")) {
                                 runOnUiThread(new Runnable() {
                                     @SuppressLint("SetTextI18n")
                                     @Override
@@ -269,7 +284,7 @@ public class NavigationCamera extends AppCompatActivity implements CameraBridgeV
                                     }
                                 });
 
-                            } else if (Locations.get(currentIndex + 1).getDirection().equals("left") || Locations.get(currentIndex+2).equals("left")) {
+                            } else if ( (destination_index!=currentIndex+1 || destination_index!=currentIndex+2)  && Locations.get(currentIndex + 1).getDirection().equals("left") || Locations.get(currentIndex+2).equals("left")) {
                                 runOnUiThread(new Runnable() {
                                     @SuppressLint("SetTextI18n")
                                     @Override
@@ -290,8 +305,9 @@ public class NavigationCamera extends AppCompatActivity implements CameraBridgeV
 
                         }
                     }
+                    direction.setText("");
 
-                    if(destination_index == currentIndex){
+                    if(destination_index == currentIndex || currentIndex+1 == destination_index){
                         navigating = false;
                         runOnUiThread(new Runnable() {
                             @SuppressLint("SetTextI18n")
@@ -312,7 +328,7 @@ public class NavigationCamera extends AppCompatActivity implements CameraBridgeV
             }
             count++;
         }
-        if(Constant.OBJECT_DETECTION) {
+        if(Global.OBJECT_DETECTION) {
             mRGBA = objectDetector.recognizeImage(mRGBA);
         }
         return mRGBA;

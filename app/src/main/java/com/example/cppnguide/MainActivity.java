@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     private ObjectDetector objectDetector;
     private CheckBox checkBox;
     private CheckBox checkBox2;
+    private CheckBox default_map,nav_map;
+
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -49,15 +51,15 @@ public class MainActivity extends AppCompatActivity {
         tv.setText(stringFromJNI());
 
         checkBox = findViewById(R.id.object_detector);
-
+        Global.APP_BASE_STORAGE = getBaseContext().getExternalFilesDir(null).getAbsolutePath().toString();
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(compoundButton.isChecked()){
-                    Constant.OBJECT_DETECTION = true;
+                    Global.OBJECT_DETECTION = true;
                 }
                 else{
-                    Constant.OBJECT_DETECTION = false;
+                    Global.OBJECT_DETECTION = false;
                 }
             }
         });
@@ -67,10 +69,34 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(compoundButton.isChecked()){
-                    Constant.MAP_VIEW_MAP_CREATION = true;
+                    Global.MAP_VIEW_MAP_CREATION = true;
                 }
                 else{
-                    Constant.MAP_VIEW_MAP_CREATION = false;
+                    Global.MAP_VIEW_MAP_CREATION = false;
+                }
+            }
+        });
+        default_map = findViewById(R.id.default_map);
+        default_map.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(compoundButton.isChecked()){
+                    Global.LATEST_MAP = true;
+                }
+                else{
+                    Global.LATEST_MAP = false;
+                }
+            }
+        });
+        nav_map = findViewById(R.id.checkBox_nav_map);
+        nav_map.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(compoundButton.isChecked()){
+                    Global.MAP_VIEW_NAVIGATION = true;
+                }
+                else{
+                    Global.MAP_VIEW_NAVIGATION = false;
                 }
             }
         });

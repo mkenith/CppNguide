@@ -13,8 +13,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +51,7 @@ public class CreateMapAlgorithm extends Activity {
         double current_y = 0;
         double prev_x = 0;
         double prev_y = 0;
-        double step_length = 1;
+        double step_length = 5;
         double prevAngle = 0;
         int prevSensorAngle = (Integer) rotationVectors.get(0);
         for(int i = 0; i< num_image;i++){
@@ -78,6 +81,18 @@ public class CreateMapAlgorithm extends Activity {
               this.response+=",f";
           }
 
+        }
+        if(Global.LATEST_MAP) {
+           // response = baseStorage + "/Files/Locations.ser";
+            try {
+                copy(new File(baseStorage + "/Files/Locations.ser"),new File(Global.APP_BASE_STORAGE+"/Locations.ser"));
+                copy(new File(baseStorage + "/Map/map_db.yml.gz"),new File(Global.APP_BASE_STORAGE+"/map_db.yml.gz"));
+                copy(new File(baseStorage + "/Map/map_voc.yml.gz"),new File(Global.APP_BASE_STORAGE+"/map_voc.yml.gz"));
+                response="Using Latest Map in Navigation!";
+            } catch (Exception e) {
+                response = "e";
+
+            }
         }
         //this.response = ""+ReadLocations.size()+","+ReadLocations.get(ReadLocations.size()-1).getX()+":"+ReadLocations.get(ReadLocations.size()-1).getY();
 
@@ -144,7 +159,16 @@ public class CreateMapAlgorithm extends Activity {
         }catch (Exception e) {
             e.printStackTrace();
         }
-    };
+    }
+    public void copy(File src, File dst) throws IOException {
+        FileInputStream inStream = new FileInputStream(src);
+        FileOutputStream outStream = new FileOutputStream(dst);
+        FileChannel inChannel = inStream.getChannel();
+        FileChannel outChannel = outStream.getChannel();
+        inChannel.transferTo(0, inChannel.size(), outChannel);
+        inStream.close();
+        outStream.close();
+    }
 
     public native String createVocabulary(int num_images,String path);
 }

@@ -2,21 +2,14 @@ package com.example.cppnguide;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -24,7 +17,6 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
@@ -51,12 +43,14 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
@@ -77,6 +71,7 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
     private int prevStepCount =0;
     private boolean detected = false;
     private boolean consumed = false;
+    private int canvasHeight = 1000,canvasWidth = 1000;
 
 
     private Mat prev;
@@ -156,7 +151,7 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
         taskEditText = new EditText(this);
         dialog = new AlertDialog.Builder(MapCreationCamera.this);
 
-        bitmap = Bitmap.createBitmap(1000, 1000, Bitmap.Config.ARGB_8888);
+        bitmap = Bitmap.createBitmap(canvasWidth, canvasHeight, Bitmap.Config.ARGB_8888);
         canvas = new Canvas(bitmap);
         canvas.drawColor(Color.WHITE);
         prev_x = canvas.getWidth()/2;
@@ -186,8 +181,8 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
                         editTextsRenameRoom.clear();
                         current_x = 0;
                         current_y = 0;
-                        prev_x = 500;
-                        prev_y = 500;
+                        prev_x = canvas.getWidth()/2;
+                        prev_y = canvas.getHeight()/2;
                         Toast.makeText(getBaseContext(),"Response: "+ cm.response,Toast.LENGTH_LONG).show();
                         break;
 
@@ -196,8 +191,8 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
                         renameRooms.clear();
                         current_x = 0;
                         current_y = 0;
-                        prev_x = 100;
-                        prev_y = 100;
+                        prev_x = canvas.getWidth()/2;
+                        prev_y = canvas.getHeight()/2;
                         deleteRecursive(new File(baseStorage));
                         break;
                 }
@@ -234,8 +229,8 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
                         imageCount = 0;
                         current_x = 0;
                         current_y = 0;
-                        prev_x = 100;
-                        prev_y = 100;
+                        prev_x = canvas.getWidth()/2;
+                        prev_y = canvas.getHeight()/2;
                         rooms.clear();
                         renameRooms.clear();
                         editTextsRenameRoom.clear();
@@ -477,7 +472,7 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
                     @Override
                     public void run() {
                         //Map View
-                        double step_length = 10;
+                        double step_length = 5;
                         double recordedLastX = prev_x;
                         double recordedLastY = prev_y;
                         current_x =  prev_x + (step_length * Math.sin(prevAngle));
@@ -486,7 +481,7 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
                         prev_y = current_y;
                         prevAngle = (int)Math.toRadians(angle);
 
-                        if(Constant.MAP_VIEW_MAP_CREATION) {
+                        if(Global.MAP_VIEW_MAP_CREATION) {
                             Paint paint = new Paint();
                             paint.setColor(Color.RED);
                             paint.setStyle(Paint.Style.FILL_AND_STROKE);
@@ -506,6 +501,13 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
+                            try (FileOutputStream out = new FileOutputStream(baseStorage+"/Map/mapImage.png")) {
+                                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
+                                // PNG is a lossless format, the compression factor (100) is ignored
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
                             mapView.setImageBitmap(bitmap);
                         }
 
@@ -606,6 +608,7 @@ public class MapCreationCamera extends AppCompatActivity implements CameraBridge
     public void Speak(String message){
         textToSpeech.speak(message, TextToSpeech.QUEUE_FLUSH, null,null);
     }
+
 
 
 
